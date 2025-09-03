@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "AdverCPM"
+dynamic = ["version"]  # read from version.py
+description = "Integrate Adversarial attacks on CPM datasets."
+readme = "README.md"
+requires-python = ">=3.7,<3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Dhia Neifar", email = "neifar@umich.edu" }
+]
+keywords = ["opencda", "opencood", "opencpm"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries"
+]
+
+dependencies = ["pytest"]
+
+[project.optional-dependencies]
+dev = ["pytest", "black", "flake8", "pre-commit"]
+docs = ["sphinx", "mkdocs"]
+
+[tool.setuptools.dynamic]
+version = { attr = "advercpm.version.__version__" }  # src/version.py
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 88
+
+[tool.flake8]
+max-line-length = 88
+exclude = ["tests/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,2 @@
+omegaconf~=2.3.0
+setuptools~=75.3.0

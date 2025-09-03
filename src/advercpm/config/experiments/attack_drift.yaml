@@ -1,0 +1,47 @@
+# ================================
+# Scenario: Drift attack
+# This file overrides default.yaml
+# ================================
+
+experiment:
+  name: "drift_baseline"
+  description: "Drift attack on Town06 CPM dataset"
+  seed: 42
+
+data:
+  # You can override paths per scenario (optional)
+  output_path: "./datasets/attacked/drift_baseline"
+  overwrite: true
+
+attack:
+  enabled: true
+  type: "drift"
+  parameters:
+    target_id: 3
+    drift_rate: 0.5          # meters per second (example)
+    direction: "NE"          # could be ["dx","dy"] in meters if you prefer
+    apply_to_all: false      # if true, apply drift to all vehicles
+    yaw_drift_deg_per_s: 0.0 # optional: also drift orientation
+
+simulation:
+  batch_size: 8
+  shuffle: false
+  visualization: true        # show plots/point clouds during run
+  save_visualization: false
+  max_frames: null           # process all frames
+
+evaluation:
+  enabled: true
+  metrics:
+    - "MSE_position"
+    - "trajectory_divergence"
+    - "object_count_diff"
+  save_results: true
+  results_path: "./experiments/results/drift_baseline"
+  per_frame_csv: true
+
+logging:
+  level: "INFO"
+  handlers:
+    file:
+      filename: "drift.log"

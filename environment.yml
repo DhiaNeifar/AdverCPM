@@ -1,0 +1,15 @@
+name: advercpm        # Name of your environment
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - pip
+  - pip:
+      - pytest
+      - black
+      - flake8
+      - pre-commit
+      - sphinx
+      - mkdocs
+      # add other pip-installed packages here

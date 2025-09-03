@@ -1,0 +1,24 @@
+repos:
+  # Black: auto-formatter
+  - repo: https://github.com/psf/black
+    rev: 23.9.1   # pick a stable release
+    hooks:
+      - id: black
+        language_version: python3.8  # ensure consistent with your env
+
+  # Flake8: linter
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.1.0
+    hooks:
+      - id: flake8
+        additional_dependencies: [flake8-bugbear]  # optional plugin for catching more issues
+
+  # Detect if you accidentally commit large files
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=500"]  # block commits with files > 500KB
+      - id: check-merge-conflict
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
