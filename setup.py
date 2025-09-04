@@ -29,7 +29,7 @@ setup(
     packages=find_packages(where="src"),  # Auto-detect packages in src/
     package_dir={"": "src"},
     python_requires=">=3.7,<3.9",
-    install_requires=["pytest"],
+    install_requires=["pytest", "omegaconf"],
     extras_require={
         "dev": ["pytest", "black", "flake8", "pre-commit"],  # pip install .[dev]
         "docs": ["sphinx", "mkdocs"],

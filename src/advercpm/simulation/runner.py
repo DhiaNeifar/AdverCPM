@@ -33,10 +33,10 @@ def load_from_cli() -> DictConfig:
 def main():
     cfg = load_from_cli()
     log_dir = LoggerSetup(cfg).setup()
-    log = logging.getLogger("advercpm.runner")
+    logger = logging.getLogger("advercpm.runner")
 
-    log.info("Logs saved to: %s", log_dir)
-    log.debug("Full config loaded.")
+    logger.info("Logs saved to: %s", log_dir)
+    logger.debug("Full config loaded.")
 
     # TODO: add simulation pipeline here
 

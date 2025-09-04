@@ -1,2 +1,7 @@
 omegaconf~=2.3.0
 setuptools~=75.3.0
+pyyaml~=6.0.2
+advercpm~=0.1.0
+matplotlib~=3.7.5
+pytest~=8.3.5
+numpy~=1.24.4

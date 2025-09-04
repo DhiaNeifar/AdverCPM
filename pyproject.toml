@@ -24,7 +24,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries"
 ]
 
-dependencies = ["pytest"]
+dependencies = ["pytest", "omegaconf"]
 
 [project.optional-dependencies]
 dev = ["pytest", "black", "flake8", "pre-commit"]
