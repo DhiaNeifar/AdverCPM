@@ -10,25 +10,27 @@ experiment:
 
 data:
   # You can override paths per scenario (optional)
-  output_path: "./datasets/attacked/drift_baseline"
+  simulation_path: "./experiments/raw simulations"
+  adversarial_simulation_path: "./experiments/adversarial simulations"
   overwrite: true
 
 attack:
-  enabled: true
   type: "drift"
   parameters:
-    target_id: 3
-    drift_rate: 0.5          # meters per second (example)
-    direction: "NE"          # could be ["dx","dy"] in meters if you prefer
-    apply_to_all: false      # if true, apply drift to all vehicles
-    yaw_drift_deg_per_s: 0.0 # optional: also drift orientation
+    drift_rate: 0.1             # meters per frame (average drift)
+    direction: "NE"             # direction or custom dx/dy
+    apply_to_all: true          # if true, apply drift to all vehicles
+    yaw_drift_deg_per_s: 0.0    # optional: yaw drift
+    mode: "linear"              # ["linear", "biased"]
+    sigma: 0.1                  # only for biased: std deviation of noise (m)
+
 
 simulation:
   batch_size: 8
   shuffle: false
-  visualization: true        # show plots/point clouds during run
+  visualization: true           # show plots/point clouds during run
   save_visualization: false
-  max_frames: null           # process all frames
+  max_frames: null              # process all frames
 
 evaluation:
   enabled: true

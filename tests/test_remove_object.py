@@ -4,7 +4,7 @@ from pathlib import Path
 from matplotlib.patches import Polygon
 import math
 
-from advercpm.data.yaml_parser import parse_yaml
+from advercpm.utils.file_ops import parse_yaml
 from advercpm.attacks.remove_object import RemoveObjectAttack
 
 

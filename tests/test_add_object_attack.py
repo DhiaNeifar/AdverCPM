@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 
 
-from advercpm.data.yaml_parser import parse_yaml
+from advercpm.utils.file_ops import parse_yaml
 from advercpm.attacks.add_object import AddObjectAttack
 
 

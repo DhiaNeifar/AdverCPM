@@ -1,5 +1,5 @@
 # src/advercpm/attacks/remove_object.py
-from .attack import Attack
+from .base_attack import Attack
 import random
 
 

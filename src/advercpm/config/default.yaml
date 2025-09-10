@@ -8,24 +8,25 @@ experiment:
   save_logs: true
 
 data:
-  dataset_path: "./datasets/original"       # base dataset
-  output_path: "./datasets/attacked"        # where modified samples are written
-  format: "yaml+pcd"                        # "yaml", "yaml+pcd"
-  overwrite: false                          # refuse to clobber existing outputs
+  simulation_path:
+    "./experiments/raw simulations"           # base dataset
+  adversarial_simulation_path:
+    "./experiments/adversarial simulations"   # where modified samples are written
+  format: "yaml+pcd"                          # "yaml", "yaml+pcd"
+  overwrite: false                            # refuse to clobber existing outputs
   allow_missing_frames: false
   file_extensions: ["yaml", "pcd"]
 
 attack:
-  enabled: true
-  type: "noop"                              # scenario overrides this
-  parameters: {}                            # scenario overrides this
+  type: "noop"                                # scenario overrides this
+  parameters: {}                              # scenario overrides this
 
 simulation:
   batch_size: 16
   shuffle: false
-  max_frames: null                          # limit frames processed (null = all)
-  num_workers: 0                            # dataloader workers
-  device: "cpu"                             # "cpu" or "cuda"
+  max_frames: null                            # limit frames processed (null = all)
+  num_workers: 0                              # dataloader workers
+  device: "cpu"                               # "cpu" or "cuda"
   visualization: false
   save_visualization: false
   deterministic: true
@@ -41,15 +42,15 @@ evaluation:
   per_frame_csv: true
 
 logging:
-  level: "INFO"                             # root level: DEBUG/INFO/WARNING/ERROR
+  level: "INFO"                               # root level: DEBUG/INFO/WARNING/ERROR
   propagate: false
   capture_warnings: true
 
   fmt:
     format: "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
     datefmt: "%Y-%m-%d %H:%M:%S"
-    json: false                             # if true and python-json-logger installed -> JSON logs
-    colorize: false                         # you can add colorlog later if you want
+    json: false                               # if true and python-json-logger installed -> JSON logs
+    colorize: false                           # you can add colorlog later if you want
 
   handlers:
     console:
@@ -57,20 +58,20 @@ logging:
       level: "INFO"
     file:
       enabled: true
-      dir: "./logs"                         # base directory for file logs
-      filename: "run.log"                   # actual filename (rotates)
+      dir: "./logs"                           # base directory for file logs
+      filename: "run.log"                     # actual filename (rotates)
       level: "INFO"
-      rotation: "size"                      # "size" or "time"
-      max_bytes: 10485760                   # 10MB (if rotation=size)
+      rotation: "size"                        # "size" or "time"
+      max_bytes: 10485760                     # 10MB (if rotation=size)
       backup_count: 5
-      when: "midnight"                      # if rotation=time
+      when: "midnight"                        # if rotation=time
       utc: true
       delay: false
 
-  level_overrides:                          # per-logger level tweaks
+  level_overrides:                            # per-logger level tweaks
     matplotlib: "WARNING"
     omegaconf: "WARNING"
 
-  use_timestamp_subdir: true                # logs/<experiment>/<YYYYmmdd_HHMMSS>/
+  use_timestamp_subdir: true                  # logs/<experiment>/<YYYYmmdd_HHMMSS>/
   timestamp_format: "%Y%m%d_%H%M%S"
   run_name_in_subdir: true

@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-from advercpm.data.yaml_parser import parse_yaml
+from advercpm.utils.file_ops import parse_yaml
 from advercpm.attacks.drift import DriftAttack
 
 

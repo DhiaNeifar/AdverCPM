@@ -5,14 +5,17 @@ from pathlib import Path
 from omegaconf import OmegaConf, DictConfig
 
 
+from advercpm.attacks import available_attacks
+
+
 # ----------------------------
 # (Optional) structured schema
 # ----------------------------
 
 @dataclass
 class DataCfg:
-    dataset_path: str = "./datasets/original"
-    output_path: str = "./datasets/attacked"
+    simulation_path: str = "./experiments/raw simulations"
+    adversarial_simulation_path: str = "./experiments/adversarial simulations"
     format: str = "yaml+pcd"            # "yaml", "yaml+pcd"
     overwrite: bool = False
     allow_missing_frames: bool = False
@@ -21,8 +24,7 @@ class DataCfg:
 
 @dataclass
 class AttackCfg:
-    enabled: bool = True
-    type: str = "noop"                  # e.g., "drift", "white_noise", "sybil"
+    type: str = "unset"
     parameters: Dict[str, Any] = field(default_factory=dict)
 
 
@@ -99,6 +101,7 @@ class ExperimentCfg:
     name: str = "baseline"             # NOTE: seed intentionally NOT here (goes in scenario file)
     description: str = ""
     save_logs: bool = True
+    seed: Optional[int] = 0
 
 
 @dataclass
@@ -114,6 +117,11 @@ class RootCfg:
 # ------------------------------------
 # Loader
 # ------------------------------------
+from pathlib import Path
+from typing import Optional, List
+from omegaconf import OmegaConf, DictConfig
+
+
 def load_config(
     default_path: str = "src/advercpm/config/default.yaml",
     scenario_path: str = None,
@@ -124,17 +132,24 @@ def load_config(
     default_cfg = OmegaConf.load(default_path)       # your default.yaml
     cfg = OmegaConf.merge(base, default_cfg)
 
-    # resolve scenario path inside config/experiments
-    scenario_path = Path("src/advercpm/config/experiments") / scenario_path
-    if not scenario_path.exists():
-        raise FileNotFoundError("Scenario config not found: ", scenario_path)
-
-
+    # --- merge with scenario config ---
+    if scenario_path is not None:
+        scenario_file = Path("src/advercpm/config/experiments") / scenario_path
+        if not scenario_file.exists():
+            raise FileNotFoundError(f"Scenario config not found: {scenario_file}")
+        scenario_cfg = OmegaConf.load(scenario_file)
+        cfg = OmegaConf.merge(cfg, scenario_cfg)
+        attack_type = cfg.attack.type
+        attacks = available_attacks()
+        if attack_type not in attacks:
+            raise ValueError(
+                f"Attack type '{attack_type}' not recognized.\n"
+                f"Available attacks: {', '.join(attacks)}"
+            )
+    # --- CLI overrides ---
     if cli_overrides:
         dotlist = OmegaConf.from_dotlist(cli_overrides)
         cfg = OmegaConf.merge(cfg, dotlist)
 
     OmegaConf.set_readonly(cfg, False)  # allow runtime edits (e.g., computed paths)
     return cfg
-
-
