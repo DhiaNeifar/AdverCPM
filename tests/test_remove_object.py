@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from matplotlib.patches import Polygon
 import math
+from tqdm import tqdm
 
 from advercpm.utils.file_ops import parse_yaml
 from advercpm.attacks.remove_object import RemoveObjectAttack
@@ -10,20 +11,34 @@ from advercpm.attacks.remove_object import RemoveObjectAttack
 
 def run_remove_object_experiment(sim_path: str, mode="targeted", omitted_id=650):
     """
-    Run RemoveObject attack across frames.
+    Run RemoveObject attack across frames from the malicious vehicle's folder.
     """
     sim_dir = Path(sim_path)
-    yaml_files = sorted(sim_dir.glob("*.yaml"))
+    print(f"[INFO] Starting RemoveObject experiment")
+    print(f"[INFO] Simulation root path = {sim_dir}")
+
+    if not sim_dir.exists():
+        raise FileNotFoundError(f"[ERROR] Path does not exist: {sim_dir}")
+
+    malicious_dir = sim_dir / str(omitted_id)
+    if not malicious_dir.exists():
+        raise FileNotFoundError(f"[ERROR] Malicious folder not found: {malicious_dir}")
+
+    yaml_files = sorted(malicious_dir.glob("*.yaml"))
+    print(f"[INFO] Found {len(yaml_files)} YAML files in folder {omitted_id}")
+
     if not yaml_files:
-        raise FileNotFoundError(f"No YAML files in {sim_dir}")
+        raise FileNotFoundError(f"[ERROR] No YAML files in {malicious_dir}")
 
     attacked_frames = []
-    for f in yaml_files:
+    attack = RemoveObjectAttack({"mode": mode, "omitted_id": omitted_id})
+
+    for f in tqdm(yaml_files, desc=f"RemoveObjectAttack (omitted_id={omitted_id})"):
         cpm = parse_yaml(f)
-        attack = RemoveObjectAttack({"mode": mode, "omitted_id": omitted_id})
         cpm_attacked = attack.apply(cpm)
         attacked_frames.append(cpm_attacked)
 
+    print(f"[RESULT] Total attacked frames = {len(attacked_frames)}")
     return attacked_frames
 
 
@@ -31,9 +46,10 @@ def plot_remove_object_example(cpm_frame, ego_id: int = 641):
     """
     Plot vehicles from CPM:
     - Ego vehicle in blue
-    - Removed vehicle in black outline
+    - Removed vehicle(s) marked in black
     - Other vehicles in green
     """
+    print("[INFO] Plotting RemoveObject example frame...")
     fig, ax = plt.subplots(figsize=(8, 8))
     vehicles = cpm_frame.get("vehicles", {})
     removed = cpm_frame.get("_removed", [])
@@ -53,15 +69,14 @@ def plot_remove_object_example(cpm_frame, ego_id: int = 641):
         else:
             color, label = "green", None
 
-        poly = Polygon(rotated, closed=True, edgecolor=color, facecolor="none",
-                       linewidth=2, label=label)
+        poly = Polygon(rotated, closed=True, edgecolor=color,
+                       facecolor="none", linewidth=2, label=label)
         ax.add_patch(poly)
 
-    # Show removed ones in black
-    for rid in removed:
+    # Mark removed vehicles
+    if removed:
         ax.annotate("REMOVED", (0.02, 0.95), xycoords="axes fraction",
                     fontsize=10, color="black", weight="bold")
-        # just mark in legend, we already popped them
         ax.plot([], [], color="black", label="Removed")
 
     xs = [v["location"][0] for v in vehicles.values()]
@@ -84,10 +99,12 @@ def test_remove_object_attack(sim_path=None):
     """
     sim_path = sim_path or os.getenv("SIM_PATH")
     if not sim_path:
-        print("⚠️ Skipping test_remove_object_attack (SIM_PATH not set)")
+        print("Skipping test_remove_object_attack (SIM_PATH not set)")
         return
 
+    print(f"[TEST] Running RemoveObjectAttack with SIM_PATH={sim_path}")
     attacked_frames = run_remove_object_experiment(sim_path, mode="targeted", omitted_id=650)
     assert attacked_frames, "No attacked frames produced"
 
+    print("[TEST] Plotting first attacked frame for verification...")
     plot_remove_object_example(attacked_frames[0])
